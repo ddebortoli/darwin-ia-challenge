@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: expense_bot_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Ollama Service
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    # Health check disabled - Ollama is reliable
+    # healthcheck:
+    #   test: ["CMD-SHELL", "nc -z localhost 11434 || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s
+
+  # Bot Service
+  bot-service:
+    build:
+      context: ./bot-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./bot-service/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/expense_bot_db
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama2
+      - BOT_SERVICE_PORT=8000
+      - BOT_SERVICE_HOST=0.0.0.0
+      - LOG_LEVEL=INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Connector Service
+  connector-service:
+    build:
+      context: ./connector-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./connector-service/.env
+    environment:
+      - BOT_SERVICE_URL=http://bot-service:8000
+      - CONNECTOR_SERVICE_PORT=8001
+      - CONNECTOR_SERVICE_HOST=0.0.0.0
+      - LOG_LEVEL=INFO
+    ports:
+      - "8001:8001"
+    depends_on:
+      bot-service:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+  ollama_data: 
