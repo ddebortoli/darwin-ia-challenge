@@ -289,7 +289,7 @@ The service provides comprehensive logging for:
 
 **1. Ollama connection errors:**
 - Check if Ollama is running: `docker-compose logs ollama`
-- Verify model is downloaded: `docker exec darwin-ia-challenge-ollama-1 ollama list`
+- Verify model is downloaded: `docker exec ai-telegram-bot-ollama-1 ollama list`
 - Check URL in constants.py
 
 **2. Database connection errors:**
