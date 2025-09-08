@@ -1,4 +1,4 @@
--- Darwin IA Challenge Database Schema
+-- Database Schema
 -- PostgreSQL database schema for the Telegram Expense Bot
 
 -- Users table for whitelisted Telegram users
