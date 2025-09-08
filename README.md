@@ -1,4 +1,4 @@
-# Darwin IA Challenge - Telegram Expense Bot
+# Telegram Expense Bot
 
 A Telegram chatbot that facilitates expense tracking with automatic categorization using AI. The system consists of two Python services working together to provide a seamless expense management experience.
 
@@ -24,7 +24,7 @@ A Telegram chatbot that facilitates expense tracking with automatic categorizati
 
 ```bash
 git clone <your-repo-url>
-cd darwin-ia-challenge
+cd ai-telegram-bot
 ```
 
 #### 3. **Configure Environment**
@@ -207,7 +207,7 @@ CREATE TABLE expenses (
 
 **3. Ollama connection issues:**
 - Verify Ollama is running: `docker-compose logs ollama`
-- Check model is downloaded: `docker exec darwin-ia-challenge-ollama-1 ollama list`
+- Check model is downloaded: `docker exec ai-telegram-bot-ollama-1 ollama list`
 
 **4. Database connection errors:**
 - Check PostgreSQL is running: `docker-compose logs postgres`
@@ -240,7 +240,7 @@ curl -X POST http://localhost:8000/process-expense \
 ## 📁 Project Structure
 
 ```
-darwin-ia-challenge/
+ai-telegram-bot/
 ├── bot-service/              # Expense analysis and database operations
 │   ├── main.py              # FastAPI application
 │   ├── service.py           # Business logic layer

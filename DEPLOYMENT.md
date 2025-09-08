@@ -18,7 +18,7 @@ Before deploying, ensure you have:
 1. **Clone the repository:**
    ```bash
    git clone <your-repo-url>
-   cd darwin-ia-challenge
+   cd ai-telegram-bot
    ```
 
 2. **Set up environment variables:**
